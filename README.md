@@ -1,2 +1,2 @@
 # dataFaker
-Repository used for some web tests
+Repository used for some web tests and retrieving data
