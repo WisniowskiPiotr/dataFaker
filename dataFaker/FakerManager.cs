@@ -32,18 +32,20 @@ namespace dataFaker
 
         public void StartFakingData()
         {
-            string[] args = GenerateRandomArgs();
-            var faker = Activator.CreateInstance(FakerType, args);
-            
-            Console.Write("Start Faking \n");
-            Task task = ((IFakerInterface)faker).SendQueryAsync();
-            task.Wait();
-            Random rand = new Random();
-            int maxSleep = 82800/ GetNumberOfFakes();
-            int sleep = rand.Next(0, maxSleep);
-            Console.Write("Wait " + sleep + " s");
-            Thread.Sleep(1000* sleep);
-            
+            while (true)
+            {
+                string[] args = GenerateRandomArgs();
+                var faker = Activator.CreateInstance(FakerType, args);
+
+                Console.Write("Start Faking \n");
+                Task task = ((IFakerInterface)faker).SendQueryAsync();
+                task.Wait();
+                Random rand = new Random();
+                int maxSleep = 82800 / GetNumberOfFakes();
+                int sleep = rand.Next(0, maxSleep);
+                Console.Write("Wait " + sleep + " s");
+                Thread.Sleep(1000 * sleep);
+            }
         }
 
         private string[] GenerateRandomArgs()
