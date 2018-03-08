@@ -16,45 +16,49 @@ namespace dataFaker
         DateTime startDate = new DateTime(2018, 02, 22);
         DateTime endDate = new DateTime(2018, 05, 30);
         int minSearches = 10;
-        int maxSearches = 100;
+        int maxSearches = 500;
         double variation = 0.4;
-        
-        object[] fakers;
+
+        Type FakerType;
+        int RequiredArgsNb;
+        string[] RandomArgList;
 
         public FakerManager(Type fakerType,int requiredArgsNb, string[] randomArgList)
         {
-            Random random = new Random();
-            int fakersNb = GetNumberOfFakes();
-            fakers = new object[fakersNb];
-            for (int i = 0; i < fakersNb; i++)
-            {
-                List<string> args = new List<string>();
-                for (int j = 0; j < requiredArgsNb; j++)
-                {
-                    string arg;
-                    do
-                    {
-                        arg = randomArgList[random.Next(0, randomArgList.Length - 1)];
-                    } while (args.Contains(arg));
-                    args.Add(arg);
-                }
-                fakers[i]=Activator.CreateInstance(fakerType, args.ToArray());
-            }
+            FakerType = fakerType;
+            RequiredArgsNb = requiredArgsNb;
+            RandomArgList = randomArgList;
         }
 
         public void StartFakingData()
         {
-            foreach (object faker in fakers)
+            string[] args = GenerateRandomArgs();
+            var faker = Activator.CreateInstance(FakerType, args);
+            
+            Console.Write("Start Faking \n");
+            Task task = ((IFakerInterface)faker).SendQueryAsync();
+            task.Wait();
+            Random rand = new Random();
+            int maxSleep = 82800/ GetNumberOfFakes();
+            int sleep = rand.Next(0, maxSleep);
+            Console.Write("Wait " + sleep + " s");
+            Thread.Sleep(1000* sleep);
+            
+        }
+
+        private string[] GenerateRandomArgs()
+        {
+            List<string> args = new List<string>();
+            for (int j = 0; j < RequiredArgsNb; j++)
             {
-                Console.Write("Start Faking \n");
-                Task task = ((IFakerInterface)faker).SendQueryAsync();
-                task.Wait();
-                Random rand = new Random();
-                int maxSleep = 82800 / fakers.Length;
-                int sleep = rand.Next(0, maxSleep);
-                Console.Write("Wait " + sleep + " s");
-                Thread.Sleep(1000* sleep);
+                string arg;
+                do
+                {
+                    arg = RandomArgList[(new Random()).Next(0, RandomArgList.Length - 1)];
+                } while (args.Contains(arg));
+                args.Add(arg);
             }
+            return args.ToArray();
         }
 
         private int GetNumberOfFakes()
