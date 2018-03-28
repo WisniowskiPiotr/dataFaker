@@ -43,7 +43,7 @@ namespace dataFaker
                 Random rand = new Random();
                 int maxSleep = 82800 / GetNumberOfFakes();
                 int sleep = rand.Next(0, maxSleep);
-                Console.Write("Wait " + sleep + " s");
+                Console.Write("Wait " + sleep + " s\n");
                 Thread.Sleep(1000 * sleep);
             }
         }
